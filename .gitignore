@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Local config
+config/databricks-profiles
+.databrickscfg
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
