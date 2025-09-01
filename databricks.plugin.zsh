@@ -100,10 +100,24 @@ function _databricks_profiles() {
 compdef '_alternative "profiles:profiles:($(_databricks_profiles))"' databricks_profile
 compdef '_alternative "profiles:profiles:($(_databricks_profiles))"' dbrsp
 
-# List jobs with current profile
+# List jobs with current  or specified profile
 function databricks_jobs_list() {
-    local profile=$(databricks_current_profile)
+    local profile="${1:-$(databricks_current_profile)}"
+    # If first argument is a profile name, shift it out
+    if [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]] && [[ "$1" != --* ]]; then
+        shift
+    fi
     databricks --profile "$profile" jobs list "$@"
+}
+
+# List active job runs with current or specified profile
+function databricks_jobs_list_runs() {
+    local profile="${1:-$(databricks_current_profile)}"
+    # If first argument is a profile name, shift it out
+    if [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]] && [[ "$1" != --* ]]; then
+        shift
+    fi
+    databricks --profile "$profile" jobs list-runs --active-only "$@"
 }
 
 # Essential aliases
@@ -118,8 +132,9 @@ alias dbrsstaging='databricks_profile staging'
 alias dbrsprod='databricks_profile prod'
 alias dbrsdef='databricks_profile DEFAULT'
 
-# Most common operations
+# Most common jobs operations
 alias dbrsjl='databricks_jobs_list'
+alias dbrsjr='databricks_jobs_list_runs'
 
 # Quick info
 alias dbrsconfig='cat $DATABRICKS_CONFIG_FILE'
