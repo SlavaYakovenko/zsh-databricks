@@ -9,8 +9,8 @@ This plugin provides a set of convenient aliases and functions to streamline you
 ## Features
 
 - **Profile Management**: Easy switching between Databricks environments with current profile awareness
-- **Smart Operations**: All operations automatically use your current active profile
-- **Job Management**: Quick access to job listings with proper profile context
+- **Universal Operations**: All operations can use current profile or specified profile as parameter
+- **Job Management**: Quick access to job listings and active runs with proper profile context
 - **Colored Output**: Enhanced readability with color-coded status messages
 - **Auto-completion**: Tab completion for profile names
 
@@ -56,7 +56,9 @@ source /path/to/zsh-databricks/databricks.plugin.zsh
 
 - **Zsh 5.0+**
 - **Python 3.6+**
-- **Databricks CLI**: `pip install databricks-cli`
+- **Databricks CLI 0.200.0+**: `pip install databricks-cli`
+
+> **Note**: This plugin uses the modern Databricks CLI syntax (v0.200.0+). If you're using an older version, some commands may not work as expected. Update with: `pip install --upgrade databricks-cli`
 
 ## Quick Start
 
@@ -94,11 +96,12 @@ dbrsstatus     # Show connection status
 | `dbrsprod` | Switch to `prod` profile |
 | `dbrsdef` | Switch to `DEFAULT` profile |
 
-### Operations
+### Job Operations
 
 | Alias | Function | Description |
 |-------|----------|-------------|
-| `dbrsjl` | `databricks_jobs_list` | List jobs from current profile |
+| `dbrsjl` | `databricks_jobs_list` | List jobs from current or specified profile |
+| `dbrsjr` | `databricks_jobs_list_runs` | List active job runs from current or specified profile |
 
 ### Information
 
@@ -137,11 +140,32 @@ dbrsdev
 # List jobs in dev
 dbrsjl
 
+# Check active runs in dev
+dbrsjr
+
 # Switch to production
 dbrsprod
 
 # Check production jobs
 dbrsjl
+```
+
+### Multi-Profile Operations
+
+```bash
+# Check active runs in specific profile without switching
+dbrsjr PROD
+
+# List jobs in staging while staying on current profile
+dbrsjl STAGING
+
+# Check multiple environments quickly
+dbrsjr DEV
+dbrsjr STAGING  
+dbrsjr PROD
+
+# Use additional parameters with specific profile
+dbrsjr PROD --limit 5 --output json
 ```
 
 ### Connection Testing
@@ -215,6 +239,15 @@ dbrsp <TAB>    # Shows available profiles from your config
    - Verify `databricks` is in your `plugins=()` list in `~/.zshrc`
    - Restart your shell: `source ~/.zshrc`
 
+4. **"Unknown flag" or command errors**
+   ```bash
+   # Check your Databricks CLI version
+   dbrsversion
+   
+   # Update to latest version if needed
+   pip install --upgrade databricks-cli
+   ```
+
 ### Debug Information
 
 ```bash
@@ -246,6 +279,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### v0.0.1 (Initial Release)
 - Profile management with auto-completion
 - Connection testing with colored output
-- Smart job listing with current profile awareness
+- Universal job operations (current or specified profile)
+- Active job runs monitoring  
 - Quick environment switching (dev/staging/prod/DEFAULT)
 - Configuration and version info commands
