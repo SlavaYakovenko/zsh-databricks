@@ -276,6 +276,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.0.2 - Active Job Runs Monitoring and Universal Profile Support
+ - Active Job Runs Monitoring: New dbrsjr alias for listing active job runs across all profiles
+ - Universal Profile Support: Job operations now accept optional profile parameter
+ - Multi-environment workflow: Check any environment without switching context (e.g., dbrsjr PROD)
+
+Enhanced Job Operations:
+ - dbrsjl [profile] - List jobs from current or specified profile
+ - dbrsjr [profile] - List active runs from current or specified profile
+ - Support for additional CLI parameters: dbrsjr PROD --limit 5 --output json
+
+
 ### v0.0.1 (Initial Release)
 - Profile management with auto-completion
 - Connection testing with colored output
