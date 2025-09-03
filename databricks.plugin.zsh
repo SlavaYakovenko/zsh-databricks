@@ -120,6 +120,76 @@ function databricks_jobs_list_runs() {
     databricks --profile "$profile" jobs list-runs --active-only "$@"
 }
 
+function databricks_get_run_info() {
+    local run_id=$1
+    local profile=${2:-""}
+    
+    # Check if jq is available
+    if ! command -v jq &> /dev/null; then
+        echo "Error: jq not found. Install options:"
+        echo "  Mac (modern): Included in Xcode Command Line Tools - run 'xcode-select --install'"
+        echo "  Mac (Homebrew): brew install jq"
+        echo "  Linux: sudo apt-get install jq / sudo dnf install jq"
+        return 1
+    fi
+    
+    # Execute databricks command
+    local output
+    if [[ -n "$profile" ]]; then
+        output=$(databricks jobs get-run $run_id --profile $profile --output json 2>/dev/null)
+    else
+        output=$(databricks jobs get-run $run_id --output json 2>/dev/null)
+    fi
+    
+    # Check command execution
+    if [[ $? -ne 0 ]] || [[ -z "$output" ]]; then
+        echo "Error: Failed to get job run info for run_id: $run_id"
+        [[ -n "$profile" ]] && echo "Profile: $profile"
+        return 1
+    fi
+    
+    # Parse JSON output
+    echo "$output" | jq '{job_id, run_id, state, start_time, end_time}' 2>/dev/null || {
+        echo "Error: Failed to parse JSON response"
+        return 1
+    }
+}
+
+function databricks_get_run_params() {
+    local run_id=$1
+    local profile=${2:-""}
+    
+    # Check if jq is available
+    if ! command -v jq &> /dev/null; then
+        echo "Error: jq not found. Install options:"
+        echo "  Mac (modern): Included in Xcode Command Line Tools - run 'xcode-select --install'"
+        echo "  Mac (Homebrew): brew install jq"
+        echo "  Linux: sudo apt-get install jq / sudo dnf install jq"
+        return 1
+    fi
+    
+    # Execute databricks command
+    local output
+    if [[ -n "$profile" ]]; then
+        output=$(databricks jobs get-run $run_id --profile $profile --output json 2>/dev/null)
+    else
+        output=$(databricks jobs get-run $run_id --output json 2>/dev/null)
+    fi
+    
+    # Check command execution
+    if [[ $? -ne 0 ]] || [[ -z "$output" ]]; then
+        echo "Error: Failed to get job run info for run_id: $run_id"
+        [[ -n "$profile" ]] && echo "Profile: $profile"
+        return 1
+    fi
+    
+    # Parse JSON output
+    echo "$output" | jq '.overriding_parameters.notebook_params' 2>/dev/null || {
+        echo "Error: Failed to parse JSON response"
+        return 1
+    }
+}
+
 # Essential aliases
 alias dbrs='databricks'
 alias dbrsp='databricks_profile'
@@ -135,6 +205,8 @@ alias dbrsdef='databricks_profile DEFAULT'
 # Most common jobs operations
 alias dbrsjl='databricks_jobs_list'
 alias dbrsjr='databricks_jobs_list_runs'
+alias dbrsrp='databricks_get_run_params'
+alias dbrsri='databricks_get_run_info'
 
 # Quick info
 alias dbrsconfig='cat $DATABRICKS_CONFIG_FILE'
