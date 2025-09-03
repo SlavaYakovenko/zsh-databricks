@@ -112,12 +112,19 @@ function databricks_jobs_list() {
 
 # List active job runs with current or specified profile
 function databricks_jobs_list_runs() {
-    local profile="${1:-$(databricks_current_profile)}"
-    # If first argument is a profile name, shift it out
-    if [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]] && [[ "$1" != --* ]]; then
+    local profile
+    
+    # Check if first argument is a profile name (not a flag)
+    if [[ $# -gt 0 ]] && [[ "$1" =~ ^[a-zA-Z0-9_-]+$ ]] && [[ "$1" != --* ]]; then
+        # First argument is a profile name
+        profile="$1"
         shift
+    else
+        # No profile specified or first argument is a flag, use current profile
+        profile="$(databricks_current_profile)"
     fi
-    databricks --profile "$profile" jobs list-runs --active-only "$@"
+    
+    databricks --profile "$profile" jobs list-runs "$@"
 }
 
 function databricks_get_run_info() {
