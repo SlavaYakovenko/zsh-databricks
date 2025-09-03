@@ -11,6 +11,7 @@ This plugin provides a set of convenient aliases and functions to streamline you
 - **Profile Management**: Easy switching between Databricks environments with current profile awareness
 - **Universal Operations**: All operations can use current profile or specified profile as parameter
 - **Job Management**: Quick access to job listings and active runs with proper profile context
+- **Job Run Analysis**: Detailed job run parameter extraction and debugging capabilities
 - **Colored Output**: Enhanced readability with color-coded status messages
 - **Auto-completion**: Tab completion for profile names
 
@@ -57,8 +58,13 @@ source /path/to/zsh-databricks/databricks.plugin.zsh
 - **Zsh 5.0+**
 - **Python 3.6+**
 - **Databricks CLI 0.200.0+**: `pip install databricks-cli`
+- **jq** (for job run analysis features): JSON command-line processor
+  - **Mac**: `brew install jq` or included in Xcode Command Line Tools (`xcode-select --install`)
+  - **Linux**: `sudo apt-get install jq` (Ubuntu/Debian) or `sudo dnf install jq` (Fedora/RHEL)
 
 > **Note**: This plugin uses the modern Databricks CLI syntax (v0.200.0+). If you're using an older version, some commands may not work as expected. Update with: `pip install --upgrade databricks-cli`
+
+> **Note**: The `jq` dependency is required for job run analysis features (`dbrsrp`, `dbrsri`). The plugin will provide installation instructions if `jq` is not found.
 
 ## Quick Start
 
@@ -102,6 +108,8 @@ dbrsstatus     # Show connection status
 |-------|----------|-------------|
 | `dbrsjl` | `databricks_jobs_list` | List jobs from current or specified profile |
 | `dbrsjr` | `databricks_jobs_list_runs` | List active job runs from current or specified profile |
+| `dbrsrp` | `databricks_get_run_params` | Get run parameters for specific job run ID |
+| `dbrsri` | `databricks_get_run_info` | Get detailed information for specific job run ID |
 
 ### Information
 
@@ -165,7 +173,50 @@ dbrsjr STAGING
 dbrsjr PROD
 
 # Use additional parameters with specific profile
-dbrsjr PROD --limit 5 --output json
+dbrsjr PROD --limit 5 --active-only
+```
+
+### Job Run Analysis
+
+```bash
+# Get job run parameters for specific run ID
+dbrsrp 12345
+
+# Get job run parameters from specific profile  
+dbrsrp 12345 PROD
+
+# Get detailed run information
+dbrsri 67890
+
+# Get run info from staging environment
+dbrsri 67890 STAGING
+
+# List recent runs and analyze specific ones
+dbrsjr PROD --limit 10
+dbrsri <run_id> PROD
+```
+
+### Debugging Job Runs
+
+```bash
+# 1. List recent runs (both active and completed)
+dbrsjr --limit 10
+
+# 2. List only active runs
+dbrsjr --active-only --limit 5
+
+# 3. List only completed runs
+dbrsjr --completed-only --limit 5
+
+# 4. Get parameters for specific run
+dbrsrp <run_id>
+
+# 5. Get detailed info about the run
+dbrsri <run_id>
+
+# 6. Compare runs from different environments
+dbrsri <run_id> PROD
+dbrsri <run_id> STAGING
 ```
 
 ### Connection Testing
@@ -228,18 +279,30 @@ dbrsp <TAB>    # Shows available profiles from your config
    pip install databricks-cli
    ```
 
-2. **"Connection failed"**
+2. **"jq command not found"**
+   ```bash
+   # Mac
+   brew install jq
+   # or
+   xcode-select --install
+   
+   # Linux
+   sudo apt-get install jq    # Ubuntu/Debian
+   sudo dnf install jq        # Fedora/RHEL
+   ```
+
+3. **"Connection failed"**
    ```bash
    databricks configure --token  # Reconfigure authentication
    dbrsconfig                    # Check your configuration
    ```
 
-3. **"Plugin not found"**
+4. **"Plugin not found"**
    - Make sure the plugin is in the correct directory
    - Verify `databricks` is in your `plugins=()` list in `~/.zshrc`
    - Restart your shell: `source ~/.zshrc`
 
-4. **"Unknown flag" or command errors**
+5. **"Unknown flag" or command errors**
    ```bash
    # Check your Databricks CLI version
    dbrsversion
@@ -259,6 +322,9 @@ echo $DATABRICKS_PROFILE
 
 # Test basic connectivity
 dbrsping
+
+# Test jq availability
+which jq
 ```
 
 ## Contributing
@@ -276,6 +342,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.0.3 - Job Run Analysis and Debugging (Unreleased)
+- **Enhanced Job Run Analysis**: New `dbrsrp` alias for retrieving job run parameters with JSON parsing
+- **Detailed Run Information**: New `dbrsri` alias for comprehensive job run details  
+- **Cross-Environment Debugging**: Both functions support profile parameter for multi-environment analysis
+- **Smart Argument Parsing**: Improved `dbrsjr` to work with flags without explicit profile specification
+- **Dependency Management**: Added jq dependency check with helpful installation instructions
+- **Error Handling**: Robust error handling for API failures and JSON parsing issues
+
+Enhanced Debugging Workflow:
+- `dbrsrp [run_id] [profile]` - Extract run parameters for analysis and reproduction
+- `dbrsri [run_id] [profile]` - Get comprehensive run information including status and logs
+- `dbrsjr [profile] [flags]` - Smart profile detection supports both `dbrsjr --active-only` and `dbrsjr PROD --active-only`
+- Combined workflow for complete job run lifecycle management
+
 ### v0.0.2 - Active Job Runs Monitoring and Universal Profile Support
  - Active Job Runs Monitoring: New dbrsjr alias for listing active job runs across all profiles
  - Universal Profile Support: Job operations now accept optional profile parameter
@@ -284,8 +364,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Enhanced Job Operations:
  - dbrsjl [profile] - List jobs from current or specified profile
  - dbrsjr [profile] - List active runs from current or specified profile
- - Support for additional CLI parameters: dbrsjr PROD --limit 5 --output json
-
+ - Support for additional CLI parameters: dbrsjr PROD --limit 5 --active-only
 
 ### v0.0.1 (Initial Release)
 - Profile management with auto-completion
