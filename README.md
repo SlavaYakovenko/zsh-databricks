@@ -199,11 +199,11 @@ dbrsri <run_id> PROD
 ### Debugging Job Runs
 
 ```bash
-# 1. List recent runs (both active and completed)
-dbrsjr --limit 10
+# 1. Quick check of active runs
+dbrsjra
 
-# 2. List only active runs
-dbrsjr --active-only --limit 5
+# 2. Quick check with limit
+dbrsjra --limit 5
 
 # 3. List only completed runs
 dbrsjr --completed-only --limit 5
@@ -214,9 +214,10 @@ dbrsrp <run_id>
 # 5. Get detailed info about the run
 dbrsri <run_id>
 
-# 6. Compare runs from different environments
-dbrsri <run_id> PROD
-dbrsri <run_id> STAGING
+# 6. Compare active runs across environments
+dbrsjra DEV
+dbrsjra STAGING
+dbrsjra PROD
 ```
 
 ### Connection Testing
@@ -345,6 +346,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### v0.0.3 - Job Run Analysis and Debugging (Unreleased)
 - **Enhanced Job Run Analysis**: New `dbrsrp` alias for retrieving job run parameters with JSON parsing
 - **Detailed Run Information**: New `dbrsri` alias for comprehensive job run details  
+- **Active Runs Shortcut**: New `dbrsjra` alias as quick shortcut for `dbrsjr --active-only`
 - **Cross-Environment Debugging**: Both functions support profile parameter for multi-environment analysis
 - **Smart Argument Parsing**: Improved `dbrsjr` to work with flags without explicit profile specification
 - **Dependency Management**: Added jq dependency check with helpful installation instructions
@@ -353,8 +355,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Enhanced Debugging Workflow:
 - `dbrsrp [run_id] [profile]` - Extract run parameters for analysis and reproduction
 - `dbrsri [run_id] [profile]` - Get comprehensive run information including status and logs
+- `dbrsjra [profile] [flags]` - Quick active runs check: `dbrsjra` vs `dbrsjr --active-only`
 - `dbrsjr [profile] [flags]` - Smart profile detection supports both `dbrsjr --active-only` and `dbrsjr PROD --active-only`
-- Combined workflow for complete job run lifecycle management
 
 ### v0.0.2 - Active Job Runs Monitoring and Universal Profile Support
  - Active Job Runs Monitoring: New dbrsjr alias for listing active job runs across all profiles

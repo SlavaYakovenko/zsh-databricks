@@ -212,6 +212,7 @@ alias dbrsdef='databricks_profile DEFAULT'
 # Most common jobs operations
 alias dbrsjl='databricks_jobs_list'
 alias dbrsjr='databricks_jobs_list_runs'
+alias dbrsjra='databricks_jobs_list_runs --active-only'
 alias dbrsrp='databricks_get_run_params'
 alias dbrsri='databricks_get_run_info'
 
