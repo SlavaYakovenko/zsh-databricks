@@ -343,7 +343,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
-### v0.0.3 - Job Run Analysis and Debugging (Unreleased)
+### v0.0.3 - Job Run Analysis and Debugging
 - **Enhanced Job Run Analysis**: New `dbrsrp` alias for retrieving job run parameters with JSON parsing
 - **Detailed Run Information**: New `dbrsri` alias for comprehensive job run details  
 - **Active Runs Shortcut**: New `dbrsjra` alias as quick shortcut for `dbrsjr --active-only`
