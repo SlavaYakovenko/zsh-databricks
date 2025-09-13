@@ -343,6 +343,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.1.0 - Job Execution and Pipeline Management (Unreleased)
+- **Job Execution**: New `dbrsjrun` command for running Databricks jobs with JSON parameters
+- **Configurable Parameters**: Support for `DATABRICKS_JOB_PARAMS_FILE` environment variable
+- **Clickable URLs**: Direct job run URLs output for easy navigation
+- **Smart File Detection**: Automatic differentiation between profile names and file paths
+- **Authentication Verification**: Built-in auth check before job submission
+- **Cross-Platform Clipboard**: Automatic URL copying to clipboard when available
+
+Enhanced Job Management:
+- `dbrsjrun [profile] [file]` - Run jobs with flexible parameter specification
+- `DATABRICKS_JOB_PARAMS_FILE` environment variable for default parameters
+- Seamless integration with existing profile management
+- Real-time job URL generation with workspace detection
+
 ### v0.0.3 - Job Run Analysis and Debugging
 - **Enhanced Job Run Analysis**: New `dbrsrp` alias for retrieving job run parameters with JSON parsing
 - **Detailed Run Information**: New `dbrsri` alias for comprehensive job run details  
